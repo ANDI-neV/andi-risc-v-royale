@@ -50,3 +50,17 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+
+# Python:
+
+instance/
+.webassets-cache
+
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
