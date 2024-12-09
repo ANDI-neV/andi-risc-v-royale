@@ -1,4 +1,9 @@
 from flask import Flask, request, jsonify
+import random
+import time
+import os
+from game import *
+import threading
 
 app = Flask(__name__)
 
@@ -10,7 +15,52 @@ def reply():
     elif request.method == 'POST':
         data = request.json
         print(data)
-        return jsonify({"message": "Received from POST", "data": data})
+        reply = jsonify({"message": "Received from POST", "data": data})
+        print("Replying with", reply)
+        return reply
+
+
+# {"name": char[4]}
+@app.route('/register', methods=['POST'])
+def register():
+    print(request.json)
+    name = request.json["name"]
+    print(name + " has registered!")
+    # timeout for steps is 10 seconds
+    token = os.urandom(4).hex()
+    Players.append(Player(name, token, 10))
+    print("Returning token " + token)
+    return jsonify({"token": token})
+
+@app.route('/state', methods=['POST'])
+def state():
+    # This takes name and token and returns if game, and if whose turn it is
+    pass
+
+@app.route('/board', methods=['POST'])
+def board():
+    # This takes name and token and returns the board
+    pass
+
+@app.route('/start', methods=['POST'])
+def start():
+    print(request.json)
+    name = request.json["name"]
+    token = request.json["token"]
+    for player in Players:
+        if player.name == name and player.token == token:
+            return jsonify({"state": "success"})
+    return jsonify({"state": "failure"})
+
+@app.route('/play', methods=['POST'])
+def play():
+    # The player plays a move
+    pass
+
 
 if __name__ == '__main__':
+    # set random seed
+    random.seed(time.time())
+    cleaner = threading.Thread(target=timeout_cleaner)
+    cleaner.start()
     app.run(debug=True, port=11449, host="0.0.0.0")
