@@ -30,6 +30,8 @@ Contents:
 #define WIFI_SSID "WIFI_SSID"
 #define WIFI_PASS "WIFI_PASS"
 
+#define CONFIG_HTTP_ENDPOINT "IP ADDRESS OR HOSTNAME HERE"
+
 #define AGENTNAME "Name"
 
 #endif
