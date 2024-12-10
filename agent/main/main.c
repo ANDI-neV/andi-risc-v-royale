@@ -52,6 +52,7 @@ typedef struct {
     int direction; // 0 = right, 1 = down
 }ship;
 
+char board[100]; // "W", "H"; Water and Hit
 
 const char* ship_data(ship ship){
     char *data = malloc(100);
@@ -429,6 +430,30 @@ int get_state(client_thingy thing){
     }
 }
 
+static void get_board(client_thingy thing){
+    char *post_data = malloc(50);
+    memset(post_data, 0, 50);
+    strcat(post_data, "{\"name\":\"");
+    strcat(post_data, AGENTNAME);
+    strcat(post_data,"\", \"token\":\"");
+    strcat(post_data, token);
+    strcat(post_data, "\"}");
+    esp_http_client_set_method(thing.client, HTTP_METHOD_POST);
+    esp_http_client_set_header(thing.client, "Content-Type", "application/json");
+    esp_http_client_set_post_field(thing.client, post_data, strlen(post_data));
+    esp_http_client_set_url(thing.client, "/board");
+    esp_err_t err = esp_http_client_perform(thing.client);
+    if (err == ESP_OK) {
+        ESP_LOGI(TAGHTTP, "HTTP POST Status = %d, content_length = %"PRId64,
+                esp_http_client_get_status_code(thing.client),
+                esp_http_client_get_content_length(thing.client));
+    } else {
+        ESP_LOGE(TAGHTTP, "HTTP POST request failed: %s", esp_err_to_name(err));
+    }
+    free(post_data);
+    ESP_LOG_BUFFER_CHAR(TAGHTTP, thing.response_buffer, strlen(thing.response_buffer));
+    esp_http_client_cleanup(thing.client);
+}
 
 client_thingy* create_http_client()
 {
@@ -448,6 +473,7 @@ client_thingy* create_http_client()
         .path = "/activity",
         .query = "esp",
         .method = HTTP_METHOD_GET,
+        .timeout_ms = 5000,
         .port = 11449,
         .event_handler = _http_event_handler,
         .user_data = thing->response_buffer,        // Pass address of local buffer to get response
@@ -492,7 +518,20 @@ void app_main(void)
     ship destroyer = {2, 4, 0, 0};
     ship ships[5] = {carrier, battleship, cruiser, submarine, destroyer};
     start_game(*thing, ships);
-    thing = create_http_client();
-    get_state(*thing);
+    while(1){
+        while (1){
+            thing = create_http_client();
+            int state = get_state(*thing);
+            if (state == 4){
+                break;
+            }
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
+        }
+        ESP_LOGI(TAGHTTP, "It's my turn");
+        // Get board
+        thing = create_http_client();
+        get_board(*thing);
+    }
+    
 
 }
