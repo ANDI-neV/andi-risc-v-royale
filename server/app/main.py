@@ -7,6 +7,9 @@ import threading
 
 app = Flask(__name__)
 
+playerqueue = []
+
+
 @app.route('/activity', methods=['GET', 'POST'])
 def reply():
     if request.method == 'GET':
@@ -34,17 +37,45 @@ def register():
 
 @app.route('/state', methods=['POST'])
 def state():
-    # This takes name and token and returns if game, and if whose turn it is
-    pass
+    print(request.json)
+    name = request.json["name"]
+    token = request.json["token"]
+    exists = False
+    for player in Players:
+        if player.name == name and player.token == token:
+            player.resetTimeout()
+            exists = True
+    if exists:
+        for game in Games:
+            if name in game.players:
+                if game.turn == name:
+                    return jsonify({"state": "turn"})
+                return jsonify({"state": "play"})
+        if player in playerqueue:
+            return jsonify({"state": "wait"})
+        return jsonify({"state": "idle"})
+    return jsonify({"state": "fail"})
+            
+            
 
 @app.route('/board', methods=['POST'])
 def board():
-    # This takes name and token and returns the board
-    pass
+    name = request.json["name"]
+    token = request.json["token"]
+    for player in Players:
+        if player.name == name and player.token == token:
+            player.resetTimeout()
+            for game in Games:
+                if name in game.players:
+                    print("Board " + game.boards[game.players.index(name)])
+                    return jsonify({"board": game.boards[game.players.index(name)]})
+        
+        
+
+
 
 @app.route('/start', methods=['POST'])
 def start():
-    print(request.json)
     name = request.json["name"]
     token = request.json["token"]
     for player in Players:
