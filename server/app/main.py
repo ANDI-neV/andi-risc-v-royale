@@ -7,8 +7,8 @@ import threading
 
 app = Flask(__name__)
 
-playerqueue = []
 
+playerqueue = []
 
 @app.route('/activity', methods=['GET', 'POST'])
 def reply():
@@ -29,7 +29,6 @@ def register():
     print(request.json)
     name = request.json["name"]
     print(name + " has registered!")
-    # timeout for steps is 10 seconds
     token = os.urandom(4).hex()
     Players.append(Player(name, token))
     print("Returning token " + token)
@@ -80,12 +79,10 @@ def start():
     token = request.json["token"]
     for player in Players:
         if player.name == name and player.token == token:
-            playerqueue.append(player)
-            print(playerqueue)
-            if len(playerqueue) == 2:
-                game = Game(playerqueue)
-                Games.append(game)
-                playerqueue = []
+            Player.get_queue().append(player)
+            if len(Player.get_queue()) == 2:
+                Games.append(Game(Player.get_queue()))
+                Player.get_queue().clear()
             return jsonify({"state": "success"})
     return jsonify({"state": "failure"})
 
