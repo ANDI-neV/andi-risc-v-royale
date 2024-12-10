@@ -360,7 +360,7 @@ static void start_game(client_thingy thing, ship *ships){
     strcat(post_data, AGENTNAME);
     strcat(post_data,"\", \"token\":\"");
     strcat(post_data, token);
-    strcat(post_data, "\", \"carrier\":");
+    strcat(post_data, "\", \"ships\":{\"carrier\":");
     strcat(post_data, ship_data(ships[0]));
     strcat(post_data, ", \"battleship\":");
     strcat(post_data, ship_data(ships[1]));
@@ -370,7 +370,7 @@ static void start_game(client_thingy thing, ship *ships){
     strcat(post_data, ship_data(ships[3]));
     strcat(post_data, ", \"destroyer\":");
     strcat(post_data, ship_data(ships[4]));
-    strcat(post_data, "}");
+    strcat(post_data, "}}");
 
     esp_http_client_set_method(thing.client, HTTP_METHOD_POST);
     esp_http_client_set_header(thing.client, "Content-Type", "application/json");
@@ -383,8 +383,9 @@ static void start_game(client_thingy thing, ship *ships){
                 esp_http_client_get_content_length(thing.client));
     } else {
         ESP_LOGE(TAGHTTP, "HTTP POST request failed: %s", esp_err_to_name(err));
+        
     }
-
+    ESP_LOG_BUFFER_CHAR(TAGHTTP, thing.response_buffer, strlen(thing.response_buffer));
     free(post_data);
     esp_http_client_cleanup(thing.client);
 }
@@ -531,6 +532,7 @@ void app_main(void)
         // Get board
         thing = create_http_client();
         get_board(*thing);
+        break;
     }
     
 
