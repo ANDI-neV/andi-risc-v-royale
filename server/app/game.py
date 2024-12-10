@@ -1,11 +1,11 @@
 import time
 
 class Player:
-    duration = 10*1000
-    def __init__(self, name, token, timeout):
+    duration = 10
+    def __init__(self, name, token):
         self.name = name
         self.token = token
-        self.timeout = time.time() + timeout
+        self.timeout = time.time() + self.duration
     def resetTimeout(self):
         self.timeout = time.time() + self.duration
     def isTimeout(self):
@@ -69,6 +69,5 @@ def timeout_cleaner():
         time.sleep(1)
         for player in Players:
             if player.isTimeout():
-                print(player.name + " has timed out!")
                 Players.remove(player)
                 break

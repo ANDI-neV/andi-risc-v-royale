@@ -31,7 +31,7 @@ def register():
     print(name + " has registered!")
     # timeout for steps is 10 seconds
     token = os.urandom(4).hex()
-    Players.append(Player(name, token, 10))
+    Players.append(Player(name, token))
     print("Returning token " + token)
     return jsonify({"token": token})
 
