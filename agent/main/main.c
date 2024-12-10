@@ -25,7 +25,7 @@
 #define MAX_HTTP_OUTPUT_BUFFER 2048
 static const char *TAGHTTP = "HTTP_CLIENT";
 
-#define CONFIG_HTTP_ENDPOINT "192.168.178.44"
+
 
 /** DEFINES **/
 #define WIFI_SUCCESS 1 << 0
