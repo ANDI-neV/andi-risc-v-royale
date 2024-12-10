@@ -1,4 +1,5 @@
 import time
+import json
 
 class Player:
     playerqueue = []
@@ -11,13 +12,16 @@ class Player:
         self.timeout = time.time() + self.duration
     def isTimeout(self):
         return time.time() > self.timeout
+    def addBoard(self, board, ships):
+        self.board = board
+        self.board.placeShips(ships)
     @staticmethod
     def get_queue():
         return Player.playerqueue
 
     
 
-Games = []
+
 Players = []
 
 
@@ -27,17 +31,20 @@ class Board:
     def __init__(self, owner):
         self.board = [["W" for i in range(10)] for j in range(10)]
     def placeShips(self, ships):
-        # ship = "{'l': 5, 'x': 0, 'y': 0, 'd': 0}"
-        for ship in ships:
-            for i in range(ship["l"]):
+        # ship = "{'carrier': {'l': 5, 'x': 0, 'y': 0, 'd': 0}"
+        for ship in ships.values():
+            
+            #json_ships = json.loads(ship)
+            values = ship#.values()
+            for i in range(values["l"]):
                 if ship["d"] == 0:
-                    if self.board[ship["x"] + i][ship["y"]] == "S":
+                    if self.board[values["x"] + i][values["y"]] == "S":
                         return False
-                    self.board[ship["x"] + i][ship["y"]] = "S"
+                    self.board[values["x"] + i][values["y"]] = "S"
                 else:
-                    if self.board[ship["x"]][ship["y"] + i] == "S":
+                    if self.board[values["x"]][values["y"] + i] == "S":
                         return False
-                    self.board[ship["x"]][ship["y"] + i] = "S"
+                    self.board[values["x"]][values["y"] + i] = "S"
         return True
     def __str__(self):
         board = ""
@@ -47,12 +54,10 @@ class Board:
         return board
 
 class Game:
+    Games = []
     def __init__(self, players):
-        self.boards = [Board(player) for player in players]
         self.players = players
         self.turn = self.players[0]
-    def placeShips(self, player, ships):
-        return self.boards[player].placeShips(ships)
     def play(self, player, x, y):
         self.turn = self.players[(self.players.index(player) + 1) % 2]
         if self.boards[player].board[x][y] == "S":
@@ -63,6 +68,14 @@ class Game:
             return "M"
         else:
             return "E"
+    @staticmethod
+    def getGames():
+        return Game.Games
+    def __str__(self):
+        boardstring = ""
+        boardstring += self.players[0].board.__str__()
+        boardstring += self.players[1].board.__str__()
+        return boardstring
         
 
 

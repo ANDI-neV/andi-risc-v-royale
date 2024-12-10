@@ -36,7 +36,6 @@ def register():
 
 @app.route('/state', methods=['POST'])
 def state():
-    print(request.json)
     name = request.json["name"]
     token = request.json["token"]
     exists = False
@@ -45,7 +44,7 @@ def state():
             player.resetTimeout()
             exists = True
     if exists:
-        for game in Games:
+        for game in Game.getGames():
             if name in game.players:
                 if game.turn == name:
                     return jsonify({"state": "turn"})
@@ -64,7 +63,7 @@ def board():
     for player in Players:
         if player.name == name and player.token == token:
             player.resetTimeout()
-            for game in Games:
+            for game in Game.getGames():
                 if name in game.players:
                     print("Board " + game.boards[game.players.index(name)])
                     return jsonify({"board": game.boards[game.players.index(name)]})
@@ -80,9 +79,16 @@ def start():
     for player in Players:
         if player.name == name and player.token == token:
             Player.get_queue().append(player)
+            for player in Player.get_queue():
+                if player.name == name:
+                    ships = request.json["ships"]
+                    player.addBoard(Board(player), ships)
+            print("Player added")
+            print(Player.get_queue())
             if len(Player.get_queue()) == 2:
-                Games.append(Game(Player.get_queue()))
+                Game.getGames().append(Game(Player.get_queue().copy()))
                 Player.get_queue().clear()
+                print(Game.getGames()[0])
             return jsonify({"state": "success"})
     return jsonify({"state": "failure"})
 
