@@ -80,6 +80,12 @@ def start():
     token = request.json["token"]
     for player in Players:
         if player.name == name and player.token == token:
+            playerqueue.append(player)
+            print(playerqueue)
+            if len(playerqueue) == 2:
+                game = Game(playerqueue)
+                Games.append(game)
+                playerqueue = []
             return jsonify({"state": "success"})
     return jsonify({"state": "failure"})
 
