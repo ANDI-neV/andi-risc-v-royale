@@ -7,8 +7,16 @@ Agent to be installed on a ESP32-C3 Supermini (with integrated flash) and to be 
 
 # Installation
 
+- Install ESP-IDF from https://dl.espressif.com/dl/esp-idf/
 - Install ESP IDF extension from VSCode Marketplace
-
+- Configure ESP-IDF extension with Espressif Path (default: C:/Espressif/frameoworks/)
+- Wait till ESP-IDF is completely finished installing
+- Select current ESP-IDF version: the one installed
+- Select Flash Method: UART
+- Select Port: the one where ESP is connected
+- Select Device Target: ESP32-C3
+- Create a config.h like described below
+- Build, Flash & Enjoy!
 
 # Config files
 
