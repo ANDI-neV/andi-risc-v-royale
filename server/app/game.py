@@ -1,6 +1,7 @@
 import time
 
 class Player:
+    playerqueue = []
     duration = 10
     def __init__(self, name, token):
         self.name = name
@@ -10,8 +11,12 @@ class Player:
         self.timeout = time.time() + self.duration
     def isTimeout(self):
         return time.time() > self.timeout
+    @staticmethod
+    def get_queue():
+        return Player.playerqueue
+
     
-    
+
 Games = []
 Players = []
 
@@ -20,9 +25,7 @@ Players = []
 
 class Board:
     def __init__(self, owner):
-        for i in range(10):
-            for j in range(10):
-                self.board[i][j] = "W"
+        self.board = [["W" for i in range(10)] for j in range(10)]
     def placeShips(self, ships):
         # ship = "{'l': 5, 'x': 0, 'y': 0, 'd': 0}"
         for ship in ships:

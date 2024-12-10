@@ -311,12 +311,9 @@ static void http_rest_with_url(client_thingy thing)
     
     esp_http_client_set_method(thing.client, HTTP_METHOD_POST);
     ESP_LOGI(TAGHTTP, "Attempting perform");
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
     esp_http_client_set_header(thing.client, "Content-Type", "application/json");
-    //here is also dead
     esp_http_client_set_post_field(thing.client, post_data, strlen(post_data));
     esp_http_client_set_url(thing.client, "/activity");
-    // here is already dead
     esp_err_t err = esp_http_client_perform(thing.client);
     if (err == ESP_OK) {
         ESP_LOGI(TAGHTTP, "HTTP POST Status = %d, content_length = %"PRId64,
